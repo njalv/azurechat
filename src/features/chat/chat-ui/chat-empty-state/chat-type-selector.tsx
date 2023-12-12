@@ -1,5 +1,4 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, MessageCircle } from "lucide-react";
 import { FileText, FileUpIcon, MessageCircle } from "lucide-react";
 import { FC } from "react";
 import { ChatType } from "../../chat-services/models";
