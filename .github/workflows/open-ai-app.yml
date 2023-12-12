@@ -77,7 +77,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-           rg=$(az webapp list --query "[?name=='***'].resourceGroup" --output tsv)
+           rg="rg-azure-chatgpt-webapp"
            echo "Resource Group: $rg"
            appName="app-stck-test-noe-test"
            slotName="staging-slot" 
