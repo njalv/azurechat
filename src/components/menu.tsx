@@ -7,7 +7,7 @@ const Menu = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("w-80 flex flex-col", className)} {...props} />
+  <div ref={ref} className={cn("w-80 flex flex-col bg-gray-100", className)} {...props} />
 ));
 
 Menu.displayName = "Menu";
@@ -18,9 +18,11 @@ const MenuHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex pb-2 justify-between items-center", className)}
+    className={cn("flex flex-col items-center pb-4", className)} // Adjust the padding and flex-direction to suit your design
     {...props}
-  />
+  >
+    <img src="/statnett-logo.svg" alt="Logo" className="h-8 w-auto mb-2" />
+  </div>
 ));
 MenuHeader.displayName = "MenuHeader";
 
