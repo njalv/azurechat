@@ -20,7 +20,7 @@ export const MainMenu = () => {
   const { data: session } = useSession();
   const { isMenuOpen, toggleMenu } = useMenuContext();
   return (
-    <div className="flex flex-col justify-between p-2">
+    <div className="flex flex-col justify-between p-2 bg-red-600"> 
       <div className="flex gap-2  flex-col  items-center">
         <Button
           onClick={toggleMenu}
