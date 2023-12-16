@@ -28,13 +28,13 @@ ${context}
 question: ${userQuestion}`;
 };
 
-export const ChatAPIEnterprise = async (props: PromptGPTProps) => {
+export const ChatAPIEnterprise = async (props: PromptGPTProps & { systemPrompt?: string, contextPrompt?: string }) => {
   const { lastHumanMessage, id, chatThread } = await initAndGuardChatSession(
     props
   );
 
   const openAI = OpenAIInstance();
-
+  
   const userId = await userHashedId();
 
   const chatHistory = new CosmosDBChatMessageHistory({
@@ -57,21 +57,24 @@ export const ChatAPIEnterprise = async (props: PromptGPTProps) => {
       return context;
     })
     .join("\n------\n");
+    
+    const finalSystemPrompt = props.systemPrompt || SYSTEM_PROMPT;
+    const finalContextPrompt = props.contextPrompt || CONTEXT_PROMPT({
+        context,
+        userQuestion: lastHumanMessage.content,
+      });
 
   try {
     const response = await openAI.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPT,
+          content: finalSystemPrompt,
         },
         ...topHistory,
         {
           role: "user",
-          content: CONTEXT_PROMPT({
-            context,
-            userQuestion: lastHumanMessage.content,
-          }),
+          content: finalContextPrompt,
         },
       ],
       model: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
