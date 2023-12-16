@@ -27,6 +27,10 @@ interface ChatContextProps extends UseChatHelpers {
   setChatBody: (body: PromptGPTBody) => void;
   chatBody: PromptGPTBody;
   fileState: FileState;
+  systemPrompt: string;
+  contextPrompt: string;
+  setSystemPrompt: (prompt: string) => void;
+  setContextPrompt: (prompt: string) => void;
   onChatTypeChange: (value: ChatType) => void;
   onConversationStyleChange: (value: ConversationStyle) => void;
   speech: TextToSpeechProps & SpeechToTextProps;
@@ -43,7 +47,8 @@ interface Prop {
 
 export const ChatProvider: FC<Prop> = (props) => {
   const { showError } = useGlobalMessageContext();
-
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [contextPrompt, setContextPrompt] = useState('');
   const speechSynthesizer = useTextToSpeech();
   const speechRecognizer = useSpeechToText({
     onSpeech(value) {
@@ -101,6 +106,10 @@ export const ChatProvider: FC<Prop> = (props) => {
         ...response,
         setChatBody,
         chatBody,
+        systemPrompt,
+        setSystemPrompt,
+        contextPrompt,
+        setContextPrompt,
         onChatTypeChange,
         onConversationStyleChange,
         fileState,
