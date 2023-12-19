@@ -1,34 +1,36 @@
 import Typography from "@/components/typography";
 import { Card } from "@/components/ui/card";
 import { FC, useState } from "react";
-import { useChatContext } from "../chat-context";
+import { useChatContext,} from "../chat-context";
 import { ChatFileUI } from "../chat-file/chat-file-ui";
 import { ChatStyleSelector } from "./chat-style-selector";
 import { ChatTypeSelector } from "./chat-type-selector";
-
+import { Textarea } from "@/components/ui/textarea";
 
 interface Prop {}
 
-export const ChatMessageEmptyState: FC<Prop> = (props) => {
+export const ChatMessageEmptyState: FC<Prop & { systemPrompt?: string, contextPrompt?: string }> = (props) => {
   const { fileState } = useChatContext();
-
-  const { showFileUpload } = fileState;
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [systemPrompt, setSystemPromptState] = useState('You are an AI assistant that helps people find information.');
-  const [contextPrompt, setContextPromptState] = useState('Given the following extracted parts of a long document, create a final answer.If you dont know the answer, just say that you dont know. Dont try to make up an answer and dont include a citation.If you know the answer, you must always include a citation at the end of your answer and dont include full stop.');
   const { setSystemPrompt, setContextPrompt } = useChatContext();
+  const [localSystemPrompt, setLocalSystemPrompt] = useState(props.systemPrompt || '');
+  const [localContextPrompt, setLocalContextPrompt] = useState(props.contextPrompt || '');
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+
+  const handleSystemPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setLocalSystemPrompt(e.target.value);
+  };
   
-  const resetSubmission = () => {
-    setIsSubmitted(false);
+  const handleContextPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setLocalContextPrompt(e.target.value);
   };
 
-  const handleSubmit = () => {
-    setSystemPrompt(systemPrompt);
-    setContextPrompt(contextPrompt);
-
-    setIsSubmitted(true);
-    setTimeout(resetSubmission, 3000);
+  const applyPrompts = () => {
+    setSystemPrompt(localSystemPrompt);
+    setContextPrompt(localContextPrompt);
+    setConfirmationMessage('Prompts applied successfully!');
+    setTimeout(() => setConfirmationMessage(''), 3000);
   };
+  const { showFileUpload } = fileState;
 
   return (
     <div className="grid grid-cols-5 w-full items-center container mx-auto max-w-3xl justify-center h-full gap-9">
@@ -40,35 +42,22 @@ export const ChatMessageEmptyState: FC<Prop> = (props) => {
         </p>
       </div>
       <Card className="col-span-3 flex flex-col gap-5 p-5 ">
+      <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">System Prompt</p>
+          <Textarea value={localSystemPrompt} onChange={handleSystemPromptChange} placeholder="Enter System Prompt" rows={3} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">Context Prompt</p>
+          <Textarea value={localContextPrompt} onChange={handleContextPromptChange} placeholder="Enter Context Prompt" rows={3} />
+        </div>
+        <button onClick={applyPrompts} className="px-4 py-2 bg-blue-500 text-white rounded">Apply Prompts</button>
+        {confirmationMessage && (
+    <p className="text-green-500 mt-2">{confirmationMessage}</p>
+)}
         <Typography variant="h4" className="text-primary">
           Personalise
         </Typography>
-        <div className="flex flex-col gap-2">
-      <p className="text-sm text-muted-foreground">System Prompt</p>
-      <textarea
-        className="border border-gray-300 rounded p-2"
-        value={systemPrompt}
-        onChange={(e) => setSystemPrompt(e.target.value)}
-        placeholder="Enter system prompt"
-      />
-    </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">Context Prompt</p>
-          <textarea
-            className="border border-gray-300 rounded p-2"
-            value={contextPrompt}
-            onChange={(e) => setContextPromptState(e.target.value)}
-            placeholder="Enter context prompt"
-          />
-          <button
-      onClick={handleSubmit}
-      className={`my-2 ${isSubmitted ? 'button-confirmation' : 'button-normal'}`}
-      disabled={isSubmitted}  
-    >
-      {isSubmitted ? 'Prompts Submitted!' : 'Submit Prompts'}
-    </button>
-    {isSubmitted && <div className="text-green-500">Prompts have been submitted successfully.</div>}
-        </div>
+
         <div className="flex flex-col gap-2">
           <p className="text-sm text-muted-foreground">
             Choose a conversation style
@@ -83,7 +72,7 @@ export const ChatMessageEmptyState: FC<Prop> = (props) => {
         </div>
         {showFileUpload === "data" && <ChatFileUI />}
       </Card>
+      <ChatMessageEmptyState systemPrompt={props.systemPrompt} contextPrompt={props.contextPrompt} />
     </div>
   );
 };
-
