@@ -57,12 +57,14 @@ export const ChatAPIEnterprise = async (props: PromptGPTProps & { systemPrompt?:
       return context;
     })
     .join("\n------\n");
-    
-    const finalSystemPrompt = props.systemPrompt || SYSTEM_PROMPT;
-    const finalContextPrompt = props.contextPrompt || CONTEXT_PROMPT({
-        context,
-        userQuestion: lastHumanMessage.content,
-      });
+    console.log("this is the systemprompt:", props.systemPrompt);
+    console.log("this is the contextprompt:", props.contextPrompt);
+
+  const finalSystemPrompt = props.systemPrompt || SYSTEM_PROMPT;
+  const finalContextPrompt = props.contextPrompt || CONTEXT_PROMPT({
+    context,
+    userQuestion: lastHumanMessage.content,
+  });
 
   try {
     const response = await openAI.chat.completions.create({
