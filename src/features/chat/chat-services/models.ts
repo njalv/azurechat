@@ -13,6 +13,7 @@ export interface ChatMessageModel {
   content: string;
   role: ChatRole;
   context: string;
+
   type: "CHAT_MESSAGE";
 }
 
@@ -20,6 +21,7 @@ export type ConversationStyle = "creative" | "balanced" | "precise";
 export type ChatType = "simple" | "data" | "mssql" | "enterprise";
 
 export type ChatRole = "system" | "user" | "assistant" | "function";
+
 
 export interface ChatThreadModel {
   id: string;
@@ -39,12 +41,13 @@ export interface PromptGPTBody {
   chatType: ChatType;
   conversationStyle: ConversationStyle;
   chatOverFileName: string;
+
 }
 
 export interface PromptGPTProps extends PromptGPTBody {
   messages: Message[];
-  systemPrompt?: string;
-  contextPrompt?: string;
+  systemPrompt: string;
+  contextPrompt: string;
 }
 
 export interface ChatDocumentModel {
