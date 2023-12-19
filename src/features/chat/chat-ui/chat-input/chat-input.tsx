@@ -11,7 +11,7 @@ import { useChatInputDynamicHeight } from "./use-chat-input-dynamic-height";
 interface Props {}
 
 const ChatInput: FC<Props> = (props) => {
-  const { setInput, handleSubmit, isLoading, input, chatBody } =
+  const { setInput, handleSubmit, isLoading, input, chatBody, systemPrompt, contextPrompt } =
     useChatContext();
 
   const { speechEnabled } = useGlobalConfigContext();
@@ -26,7 +26,11 @@ const ChatInput: FC<Props> = (props) => {
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSubmit(e);
+    handleSubmit(e, {
+      options:  {
+        body: {contextPrompt, systemPrompt},
+      }
+    });
     resetRows();
     setInput("");
   };
