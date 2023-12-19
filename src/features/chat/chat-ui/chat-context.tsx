@@ -27,13 +27,13 @@ interface ChatContextProps extends UseChatHelpers {
   setChatBody: (body: PromptGPTBody) => void;
   chatBody: PromptGPTBody;
   fileState: FileState;
-  systemPrompt: string;
-  contextPrompt: string;
-  setSystemPrompt: (prompt: string) => void;
-  setContextPrompt: (prompt: string) => void;
   onChatTypeChange: (value: ChatType) => void;
   onConversationStyleChange: (value: ConversationStyle) => void;
   speech: TextToSpeechProps & SpeechToTextProps;
+  systemPrompt: string;
+  setSystemPrompt: (prompt: string) => void;
+  contextPrompt: string;
+  setContextPrompt: (prompt: string) => void;
 }
 
 const ChatContext = createContext<ChatContextProps | null>(null);
@@ -47,15 +47,15 @@ interface Prop {
 
 export const ChatProvider: FC<Prop> = (props) => {
   const { showError } = useGlobalMessageContext();
-  const [systemPrompt, setSystemPrompt] = useState('');
-  const [contextPrompt, setContextPrompt] = useState('');
+
   const speechSynthesizer = useTextToSpeech();
   const speechRecognizer = useSpeechToText({
     onSpeech(value) {
       response.setInput(value);
     },
   });
-
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [contextPrompt, setContextPrompt] = useState('');
   const fileState = useFileState();
 
   const [chatBody, setBody] = useState<PromptGPTBody>({
@@ -106,12 +106,12 @@ export const ChatProvider: FC<Prop> = (props) => {
         ...response,
         setChatBody,
         chatBody,
+        onChatTypeChange,
+        onConversationStyleChange,
         systemPrompt,
         setSystemPrompt,
         contextPrompt,
         setContextPrompt,
-        onChatTypeChange,
-        onConversationStyleChange,
         fileState,
         id: props.id,
         speech: {
