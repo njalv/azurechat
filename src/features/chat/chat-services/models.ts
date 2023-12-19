@@ -17,7 +17,7 @@ export interface ChatMessageModel {
 }
 
 export type ConversationStyle = "creative" | "balanced" | "precise";
-export type ChatType = "simple" | "data" | "mssql";
+export type ChatType = "simple" | "data" | "mssql" | "enterprise";
 
 export type ChatRole = "system" | "user" | "assistant" | "function";
 
@@ -43,6 +43,8 @@ export interface PromptGPTBody {
 
 export interface PromptGPTProps extends PromptGPTBody {
   messages: Message[];
+  systemPrompt?: string;
+  contextPrompt?: string;
 }
 
 export interface ChatDocumentModel {
