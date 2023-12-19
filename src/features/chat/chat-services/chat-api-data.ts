@@ -1,26 +1,24 @@
 import { userHashedId } from "@/features/auth/helpers";
 import { OpenAIInstance } from "@/features/common/openai";
-import { AI_NAME } from "@/features/theme/customise";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { similaritySearchVectorWithScore } from "./azure-cog-search/azure-cog-vector-store";
 import { initAndGuardChatSession } from "./chat-thread-service";
 import { CosmosDBChatMessageHistory } from "./cosmosdb/cosmosdb";
 import { PromptGPTProps } from "./models";
-
-const SYSTEM_PROMPT = `You are ${AI_NAME} who is a helpful AI Assistant.`;
+import { sys } from "typescript";
 
 const CONTEXT_PROMPT = ({
+  customContextPrompt,
   context,
   userQuestion,
 }: {
+  customContextPrompt: string;
   context: string;
   userQuestion: string;
 }) => {
   return `
-- Given the following extracted parts of a long document, create a final answer. \n
-- If you don't know the answer, just say that you don't know. Don't try to make up an answer.\n
-- You must always include a citation at the end of your answer and don't include full stop.\n
-- Use the format for your citation {% citation items=[{name:"filename 1",id:"file id"}, {name:"filename 2",id:"file id"}] /%}\n 
+customContextPrompt:\n 
+${customContextPrompt}
 ----------------\n 
 context:\n 
 ${context}
@@ -29,12 +27,11 @@ question: ${userQuestion}`;
 };
 
 export const ChatAPIData = async (props: PromptGPTProps) => {
-  const { lastHumanMessage, id, chatThread } = await initAndGuardChatSession(
+  const { lastHumanMessage, id, chatThread, systemPrompt, contextPrompt } = await initAndGuardChatSession(
     props
-  );
-
+    );
   const openAI = OpenAIInstance();
-
+console.log({systemPrompt, contextPrompt})
   const userId = await userHashedId();
 
   const chatHistory = new CosmosDBChatMessageHistory({
@@ -49,7 +46,7 @@ export const ChatAPIData = async (props: PromptGPTProps) => {
     lastHumanMessage.content,
     id
   );
-
+  
   const context = relevantDocuments
     .map((result, index) => {
       const content = result.pageContent.replace(/(\r\n|\n|\r)/gm, "");
@@ -63,12 +60,13 @@ export const ChatAPIData = async (props: PromptGPTProps) => {
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPT,
+          content: systemPrompt,
         },
         ...topHistory,
         {
           role: "user",
           content: CONTEXT_PROMPT({
+            customContextPrompt: contextPrompt,
             context,
             userQuestion: lastHumanMessage.content,
           }),
