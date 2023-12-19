@@ -12,3 +12,4 @@ import { PromptGPTProps } from "./models";
   } else {
     return await ChatAPISimple(props);
   }
+};
