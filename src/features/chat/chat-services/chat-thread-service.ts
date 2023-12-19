@@ -186,7 +186,7 @@ export const CreateChatThread = async () => {
 };
 
 export const initAndGuardChatSession = async (props: PromptGPTProps) => {
-  const { messages, id, chatType, conversationStyle, chatOverFileName } = props;
+  const { messages, id, chatType, conversationStyle, chatOverFileName, systemPrompt, contextPrompt } = props;
 
   //last message
   const lastHumanMessage = messages[messages.length - 1];
@@ -208,5 +208,7 @@ export const initAndGuardChatSession = async (props: PromptGPTProps) => {
     lastHumanMessage,
     chats,
     chatThread,
+    contextPrompt,
+    systemPrompt,
   };
 };
