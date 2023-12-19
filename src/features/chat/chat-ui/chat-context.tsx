@@ -30,6 +30,10 @@ interface ChatContextProps extends UseChatHelpers {
   onChatTypeChange: (value: ChatType) => void;
   onConversationStyleChange: (value: ConversationStyle) => void;
   speech: TextToSpeechProps & SpeechToTextProps;
+  systemPrompt: string;
+  setSystemPrompt: (prompt: string) => void;
+  contextPrompt: string;
+  setContextPrompt: (prompt: string) => void;
 }
 
 const ChatContext = createContext<ChatContextProps | null>(null);
@@ -50,7 +54,8 @@ export const ChatProvider: FC<Prop> = (props) => {
       response.setInput(value);
     },
   });
-
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [contextPrompt, setContextPrompt] = useState('');
   const fileState = useFileState();
 
   const [chatBody, setBody] = useState<PromptGPTBody>({
@@ -103,6 +108,10 @@ export const ChatProvider: FC<Prop> = (props) => {
         chatBody,
         onChatTypeChange,
         onConversationStyleChange,
+        systemPrompt,
+        setSystemPrompt,
+        contextPrompt,
+        setContextPrompt,
         fileState,
         id: props.id,
         speech: {
